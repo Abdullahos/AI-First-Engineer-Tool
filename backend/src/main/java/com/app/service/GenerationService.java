@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -32,11 +34,20 @@ public class GenerationService {
     private final ObjectMapper objectMapper;
     private final SpecRequestMapper specRequestMapper;
 
+    // Inject self to enable @Async self-invocation
+    private GenerationService self;
+
+    @Autowired
+    public void setSelf(@Lazy GenerationService self) {
+        this.self = self;
+    }
+
     public GenerationService(GenerationJobRepository generationJobRepository,
                              GeneratedOutputRepository generatedOutputRepository,
                              AIServiceFactory aiServiceFactory,
                              ObjectMapper objectMapper,
-                             SpecRequestMapper specRequestMapper) {
+                             SpecRequestMapper specRequestMapper
+    ) {
         this.generationJobRepository = generationJobRepository;
         this.generatedOutputRepository = generatedOutputRepository;
         this.aiServiceFactory = aiServiceFactory;
@@ -51,8 +62,8 @@ public class GenerationService {
         job.setStatus(JobStatus.PENDING);
         job = generationJobRepository.save(job);
 
-        // Trigger async processing
-        processGeneration(job.getId());
+        // Trigger async processing via the proxied self instance
+        self.processGeneration(job.getId());
 
         return new JobSubmissionResponse(job.getId());
     }
@@ -77,7 +88,6 @@ public class GenerationService {
             String generatedJson = aiService.generate(specRequestMapper.toDto(job.getSpecRequest()));
 
             GeneratedOutput generatedOutput = objectMapper.readValue(generatedJson, GeneratedOutput.class);
-            generatedOutput.setId(job.getId()); // Set ID to match GenerationJob
             generatedOutput.setGenerationJob(job); // Link to parent job
             generatedOutputRepository.save(generatedOutput);
 
