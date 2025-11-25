@@ -11,6 +11,7 @@ import com.app.repo.GenerationJobRepository;
 import com.app.service.aifactory.AICustomException;
 import com.app.service.aifactory.AIService;
 import com.app.service.aifactory.AIServiceFactory;
+import com.app.mapper.SpecRequestMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -29,21 +30,24 @@ public class GenerationService {
     private final GeneratedOutputRepository generatedOutputRepository;
     private final AIServiceFactory aiServiceFactory;
     private final ObjectMapper objectMapper;
+    private final SpecRequestMapper specRequestMapper;
 
     public GenerationService(GenerationJobRepository generationJobRepository,
                              GeneratedOutputRepository generatedOutputRepository,
                              AIServiceFactory aiServiceFactory,
-                             ObjectMapper objectMapper) {
+                             ObjectMapper objectMapper,
+                             SpecRequestMapper specRequestMapper) {
         this.generationJobRepository = generationJobRepository;
         this.generatedOutputRepository = generatedOutputRepository;
         this.aiServiceFactory = aiServiceFactory;
         this.objectMapper = objectMapper;
+        this.specRequestMapper = specRequestMapper;
     }
 
     @Transactional
-    public JobSubmissionResponse startGenerationJob(SpecRequest specRequest) {
+    public JobSubmissionResponse startGenerationJob(SpecRequest specRequestDto) {
         GenerationJob job = new GenerationJob();
-        job.setSpecRequest(specRequest);
+        job.setSpecRequest(specRequestMapper.toEntity(specRequestDto)); // Map DTO to Entity
         job.setStatus(JobStatus.PENDING);
         job = generationJobRepository.save(job);
 
@@ -69,7 +73,8 @@ public class GenerationService {
 
         try {
             AIService aiService = aiServiceFactory.getAIService(job.getSpecRequest().isRealModel());
-            String generatedJson = aiService.generate(job.getSpecRequest());
+            // Pass the embeddable SpecRequest entity to the AI service
+            String generatedJson = aiService.generate(specRequestMapper.toDto(job.getSpecRequest()));
 
             GeneratedOutput generatedOutput = objectMapper.readValue(generatedJson, GeneratedOutput.class);
             generatedOutput.setId(job.getId()); // Set ID to match GenerationJob
