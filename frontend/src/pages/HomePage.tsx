@@ -42,34 +42,37 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold text-center mb-8">AI-First Code Generation System</h1>
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10">
+            <div className="w-full max-w-4xl px-4">
+                <h1 className="text-4xl font-bold text-gray-800 text-center mb-2">AI-First Code Generation System</h1>
+                <p className="text-center text-gray-500 mb-8">Enter your system specifications below to generate code.</p>
 
-            {submissionError && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong className="font-bold">Error!</strong>
-                    <span className="block sm:inline"> {submissionError}</span>
-                </div>
-            )}
+                {submissionError && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <strong className="font-bold">Error!</strong>
+                        <span className="block sm:inline"> {submissionError}</span>
+                    </div>
+                )}
 
-            <SpecForm onSubmit={handleSubmit} />
+                <SpecForm onSubmit={handleSubmit} />
 
-            {isLoading && (
-                <div className="mt-8 p-4 text-center text-blue-600 font-semibold">
-                    Generating code... Current Status: {status}
-                </div>
-            )}
+                {isLoading && (
+                    <div className="mt-8 p-4 text-center text-blue-600 font-semibold">
+                        Generating code... Current Status: {status}
+                    </div>
+                )}
 
-            {status === 'FAILED' && errorMessage && (
-                <div className="mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong className="font-bold">Generation Failed!</strong>
-                    <span className="block sm:inline"> {errorMessage}</span>
-                </div>
-            )}
+                {status === 'FAILED' && errorMessage && (
+                    <div className="mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong className="font-bold">Generation Failed!</strong>
+                        <span className="block sm:inline"> {errorMessage}</span>
+                    </div>
+                )}
 
-            {generatedOutput && status === 'COMPLETE' && (
-                <ResultsDisplay generatedOutput={generatedOutput} />
-            )}
+                {generatedOutput && status === 'COMPLETE' && (
+                    <ResultsDisplay generatedOutput={generatedOutput} />
+                )}
+            </div>
         </div>
     );
 };
