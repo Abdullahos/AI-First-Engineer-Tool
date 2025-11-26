@@ -1,11 +1,12 @@
-import './App.css'
+import HomePage from './pages/HomePage';
+import './App.css';
 
 function App() {
   return (
-    <>
-      <h1>AI-First Code Generation System</h1>
-    </>
-  )
+    <div className="App">
+      <HomePage />
+    </div>
+  );
 }
 
-export default App
+export default App;

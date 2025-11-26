@@ -1,6 +1,6 @@
 import { SpecRequest, JobSubmissionResponse, StatusResponse, GeneratedOutput } from '../models/types';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8080/api'; // Corrected backend port
 
 export const submitGenerationRequest = async (specRequest: SpecRequest): Promise<JobSubmissionResponse> => {
     const response = await fetch(`${API_BASE_URL}/generate`, {
@@ -12,8 +12,15 @@ export const submitGenerationRequest = async (specRequest: SpecRequest): Promise
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        // Attempt to parse error message from response body
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+            // If response is not JSON, use default message
+        }
+        throw new Error(errorMessage);
     }
 
     return response.json();
