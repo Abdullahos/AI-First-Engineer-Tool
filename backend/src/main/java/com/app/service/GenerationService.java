@@ -28,13 +28,18 @@ import java.util.UUID;
 @Slf4j
 public class GenerationService {
 
+    public static final String JOB_NOT_FOUND_FOR_PROCESSING = "GenerationJob with ID {} not found for async processing.";
+    public static final String AI_SERVICE_ERROR = "AI Service Error: ";
+    public static final String RESPONSE_PARSING_ERROR = "Response Parsing Error: ";
+    public static final String UNEXPECTED_ERROR = "Unexpected Error: ";
+    public static final String JOB_NOT_FOUND_STATUS = "Job not found";
+
     private final GenerationJobRepository generationJobRepository;
     private final GeneratedOutputRepository generatedOutputRepository;
     private final AIServiceFactory aiServiceFactory;
     private final ObjectMapper objectMapper;
     private final SpecRequestMapper specRequestMapper;
 
-    // Inject self to enable @Async self-invocation
     private GenerationService self;
 
     @Autowired
@@ -58,11 +63,10 @@ public class GenerationService {
     @Transactional
     public JobSubmissionResponse startGenerationJob(SpecRequest specRequestDto) {
         GenerationJob job = new GenerationJob();
-        job.setSpecRequest(specRequestMapper.toEntity(specRequestDto)); // Map DTO to Entity
+        job.setSpecRequest(specRequestMapper.toEntity(specRequestDto));
         job.setStatus(JobStatus.PENDING);
         job = generationJobRepository.save(job);
 
-        // Trigger async processing via the proxied self instance
         self.processGeneration(job.getId());
 
         return new JobSubmissionResponse(job.getId());
@@ -73,7 +77,7 @@ public class GenerationService {
     public void processGeneration(UUID jobId) {
         Optional<GenerationJob> jobOptional = generationJobRepository.findById(jobId);
         if (jobOptional.isEmpty()) {
-            log.error("GenerationJob with ID {} not found for async processing.", jobId);
+            log.error(JOB_NOT_FOUND_FOR_PROCESSING, jobId);
             return;
         }
 
@@ -84,11 +88,10 @@ public class GenerationService {
 
         try {
             AIService aiService = aiServiceFactory.getAIService(job.getSpecRequest().isRealModel());
-            // Pass the embeddable SpecRequest entity to the AI service
             String generatedJson = aiService.generate(specRequestMapper.toDto(job.getSpecRequest()));
 
             GeneratedOutput generatedOutput = objectMapper.readValue(generatedJson, GeneratedOutput.class);
-            generatedOutput.setGenerationJob(job); // Link to parent job
+            generatedOutput.setGenerationJob(job);
             generatedOutputRepository.save(generatedOutput);
 
             job.setStatus(JobStatus.COMPLETE);
@@ -98,17 +101,17 @@ public class GenerationService {
         } catch (AICustomException e) {
             log.error("AI Service failed for job {}: {}", jobId, e.getMessage());
             job.setStatus(JobStatus.FAILED);
-            job.setErrorMessage("AI Service Error: " + e.getMessage());
+            job.setErrorMessage(AI_SERVICE_ERROR + e.getMessage());
             generationJobRepository.save(job);
         } catch (JsonProcessingException e) {
             log.error("Failed to parse AI response for job {}: {}", jobId, e.getMessage());
             job.setStatus(JobStatus.FAILED);
-            job.setErrorMessage("Response Parsing Error: " + e.getMessage());
+            job.setErrorMessage(RESPONSE_PARSING_ERROR + e.getMessage());
             generationJobRepository.save(job);
         } catch (Exception e) {
             log.error("An unexpected error occurred during generation for job {}: {}", jobId, e.getMessage(), e);
             job.setStatus(JobStatus.FAILED);
-            job.setErrorMessage("Unexpected Error: " + e.getMessage());
+            job.setErrorMessage(UNEXPECTED_ERROR + e.getMessage());
             generationJobRepository.save(job);
         }
     }
@@ -117,7 +120,7 @@ public class GenerationService {
     public StatusResponse getJobStatus(UUID jobId) {
         return generationJobRepository.findById(jobId)
                 .map(job -> new StatusResponse(job.getStatus().name(), job.getErrorMessage()))
-                .orElse(new StatusResponse(JobStatus.FAILED.name(), "Job not found"));
+                .orElse(new StatusResponse(JobStatus.FAILED.name(), JOB_NOT_FOUND_STATUS));
     }
 
     @Transactional(readOnly = true)
