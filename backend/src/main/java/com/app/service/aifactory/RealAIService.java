@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @Slf4j
+@Profile("!test")
 public class RealAIService implements AIService {
 
     private final WebClient webClient;
