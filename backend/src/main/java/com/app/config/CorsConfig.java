@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig {
 
-    @Profile("dev")
+    @Profile("{dev, test}")
     @Configuration
     public static class DevCorsConfiguration implements WebMvcConfigurer {
         @Override

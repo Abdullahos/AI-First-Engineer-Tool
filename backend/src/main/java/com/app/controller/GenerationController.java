@@ -30,13 +30,13 @@ public class GenerationController {
     }
 
     @GetMapping(value = "/status/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StatusResponse> getStatus(@PathVariable UUID id) {
+    public ResponseEntity<StatusResponse> getStatus(@PathVariable("id") UUID id) {
         StatusResponse statusResponse = generationService.getJobStatus(id);
         return ResponseEntity.ok(statusResponse);
     }
 
     @GetMapping(value = "/result/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<GeneratedOutput> getResult(@PathVariable UUID id) {
+    public ResponseEntity<GeneratedOutput> getResult(@PathVariable("id") UUID id) {
         return generationService.getGeneratedOutput(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
