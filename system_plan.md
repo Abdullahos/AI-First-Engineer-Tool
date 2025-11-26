@@ -1,5 +1,6 @@
 # Chat History
 
+> ### 🔵 User (Highlight)
 > **User:** Add gitignore for java, springboot, typescript and react
 >
 > No spaces allowed
@@ -8,6 +9,7 @@
 
 > **Assistant:** Okay, I'll generate a `.gitignore` for Java, Spring Boot, TypeScript, and React. I'll ignore common build artifacts and dependencies for each, like `target/`, `node_modules/`, and compiled files. First, I'll check for an existing `.gitignore`.
 
+> ### 🔵 User (Highlight)
 > **User:** Add environement variables to the gitignore
 
 > **Assistant:** Of course. I'll add common environment variable files like `.env` and `application.properties` to the `.gitignore`. First, I need to read the existing file.
@@ -20,6 +22,7 @@
 
 > **Assistant:** I have updated the .gitignore file to include entries for environment variables.
 
+> ### 🔵 User (Highlight)
 > **User:** You are my AI-First Engineer. Follow strict AI-first development methodology.
 >
 > ====================
@@ -525,9 +528,10 @@
 > NEXT ACTION: Await approval of this plan before proceeding with implementation.
 > ========================================
 
-> **User:** In Data models and API contract
-> use A time-stamped UUID for better lookup in the b-tree index in the GenerationJob, GenereatedOutput.
->
+> ### 🔵 User (Highlight)
+> **Use a time-stamped UUID** for improved B-Tree index locality in  
+> `GenerationJob` and `GeneratedOutput`.>
+> 
 > in Task 5: Main Page & State Orchestration:
 > the frontend should format the code that displayed inside the frontend and backend tabs
 >
