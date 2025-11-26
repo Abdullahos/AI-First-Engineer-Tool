@@ -33,7 +33,7 @@ const SpecForm: React.FC<SpecFormProps> = ({ onSubmit }) => {
         onSubmit(specRequest);
     };
 
-    const labelClass = "block text-sm font-medium text-gray-700 mb-1";
+    const labelClass = "block text-sm font-bold text-gray-700 mb-1";
     const textareaClass = "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm";
 
     return (
