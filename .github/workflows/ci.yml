@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test-backend:
     runs-on: ubuntu-latest
-    name: Backend Tests (Profile: test)
+    name: Backend Tests (Profile test)
 
     steps:
       - name: Check out code
