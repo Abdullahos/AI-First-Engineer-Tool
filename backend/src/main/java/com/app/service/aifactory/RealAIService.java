@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.util.retry.Retry;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.time.Duration;
