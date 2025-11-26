@@ -1,9 +1,11 @@
 package com.app.service.aifactory;
 
 import com.app.dto.SpecRequest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile({"test", "dev"})
 public class MockAIService implements AIService {
 
     @Override
