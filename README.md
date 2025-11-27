@@ -1,6 +1,6 @@
 # AI-First Code Generation System
 
-This project is a full-stack application designed to demonstrate an AI-first development methodology. It allows users to input detailed software specifications, which are then sent to an AI service to generate code for backend, frontend, and tests.
+This project is a full-stack application implemented using AI-First methodology. Designed to demonstrate an AI-first development methodology. It allows users to input detailed software specifications, which are then sent to an AI service to generate code for backend, frontend, and tests.
 
 ## Features
 
