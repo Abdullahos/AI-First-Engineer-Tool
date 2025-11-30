@@ -34,8 +34,6 @@ class GenerationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // Using @MockBean for GenerationService as per Spring's testing recommendations
-    // This is a Spring abstraction for creating test doubles, not Mockito directly
     @MockBean
     private GenerationService generationService;
 
