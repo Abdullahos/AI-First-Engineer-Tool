@@ -12,10 +12,14 @@ public class CorsConfig {
     @Profile("{dev, test}")
     @Configuration
     public static class DevCorsConfiguration implements WebMvcConfigurer {
+
+        @Value("${app.cors.allowed-origin}")
+        private String allowedOrigin;
+
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/api/**")
-                    .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173") // Assuming frontend runs on port 5173
+                    .allowedOrigins(allowedOrigin)
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")
                     .allowCredentials(true);
